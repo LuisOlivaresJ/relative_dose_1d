@@ -1,3 +1,24 @@
+Metadata-Version: 2.1
+Name: relative-dose-1d
+Version: 0.0.1
+Summary: Tool for 1-dimensional relative dosimetry analysis in radiotherapy
+Author-email: Luis Alfonso Olivares Jimenez <alfonso.cucei.udg@gmail.com>
+Project-URL: homepage, https://github.com/LuisOlivaresJ/relative_dose_1d
+Project-URL: repository, https://github.com/LuisOlivaresJ/relative_dose_1d
+Project-URL: Bug-Tracker, https://github.com/LuisOlivaresJ/relative_dose_1d
+Keywords: Radiotherapy,Relative dose distribution,gamma index,python,w2CAD,mcc
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Topic :: Scientific/Engineering :: Medical Science Apps.
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Natural Language :: Spanish
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
 # relative_dose_1d
 Tool for 1-dimensional relative dosimetry analysis in radiotherapy
 
