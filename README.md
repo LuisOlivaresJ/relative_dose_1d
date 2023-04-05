@@ -1,28 +1,28 @@
 # relative_dose_1d
-Tool for 1-dimensional relative dosimetry analysis in radiotherapy
+Tool for 1-dimensional analysis for dose profiles in radiotherapy.
 
 ![image_gui](/docs/assets/GUI.PNG)
 
 ## Introducción
-El paquete *relative_dose_1d* permite calcular la resta e índice gamma entre dos perfiles de dosis.
+En su primera versión, el paquete *relative_dose_1d* solamente permite calcular la resta e índice gamma entre dos perfiles de dosis. 
 
 El paquete se ha probado con los siguientes archivos:
 
-    * Archivo en formato w2CAD (formato usado por el sistema Eclipse 16.1, de la empresa Varian). 
-      En el algoritmo, el inicio de los datos se identifica con las palabras: '$STOM' o '$STOD'
+* Archivo en formato w2CAD (formato usado por el sistema Eclipse 16.1, de la empresa Varian). 
+  En el algoritmo, el inicio de los datos se identifica con las palabras: '$STOM' o '$STOD'
 
-    * Archivo en formato mcc (formato usado por el software Verisoft 7.1.0.199, de la empresa PTW).
-      En el algoritmo, el inicio de los datos se identifica con la palabra: 'BEGIN_DATA'
+* Archivo en formato mcc (formato usado por el software Verisoft 7.1.0.199, de la empresa PTW).
+  En el algoritmo, el inicio de los datos se identifica con la palabra: 'BEGIN_DATA'
 
-    * Archivo en formato txt 
-      Los datos deben de encontrarce distribuidos en M filas por 2 columnas y separados
-      por un espacio en blanco.
+* Archivo en formato txt 
+  Los datos deben de encontrarse distribuidos en M filas por 2 columnas y separados
+  por un espacio en blanco.
 
 Para un correcto funcionamiento, el archivo de texto deberá de cumplir con los siguientes características:
 
-    1.- Contener un solo perfil de datos
-    2.- Los datos deberán encontrarse en M filas y dos columnas, (M, 2).
-        La primer columa deberá de contener la posción espacial en milímetros y la segunda los datos.
+1. Contener un solo perfil de datos
+2. Los datos deberán encontrarse en M filas y dos columnas, (M, 2).
+    La primera columna deberá de contener la posición espacial en milímetros y la segunda los datos.
 
 ## Instalación
 **En Linux**<br/>
@@ -44,3 +44,7 @@ Posteriormente, escribimos:
 ```python
 import relative_dose_1d.GUI
 ```
+
+## Agradecimientos
+Al M. en C. Jose Alfredo Herrera González, y a su estudiante Laura H. por compartirme ideas para el desarrollo
+de este código.

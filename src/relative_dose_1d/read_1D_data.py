@@ -23,7 +23,7 @@ El script se ha probado con los siguientes archivos:
       En el algoritmo, el inicio de los datos se identifica con la palabra: 'BEGIN_DATA'
 
     * Archivo en formato txt 
-      Los datos deben de encontrarce distribuidos en M filas por 2 columnas y separados
+      Los datos deben de encontrarse distribuidos en M filas por 2 columnas y separados
       por un espacio en blanco.
 """
 
