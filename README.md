@@ -1,10 +1,10 @@
 # relative_dose_1d
-Tool for 1-dimensional analysis for dose profiles in radiotherapy.
+Tool for 1-dimensional dose analysis in radiotherapy.
 
 ![image_gui](/docs/assets/GUI.PNG)
 
 ## Introducción
-En su primera versión, el paquete *relative_dose_1d* solamente permite calcular la resta e índice gamma entre dos perfiles de dosis. 
+En su primera versión (0.0.3), el paquete *relative_dose_1d* solamente permite calcular la resta e índice gamma entre dos perfiles de dosis. 
 
 El paquete se ha probado con los siguientes archivos:
 
@@ -48,3 +48,8 @@ import relative_dose_1d.GUI
 ## Agradecimientos
 Al M. en C. Jose Alfredo Herrera González, y a su estudiante Laura H. por compartirme ideas para el desarrollo
 de este código.
+
+### Versiones
+Abril-2023  Versión 0.0.3<br/>
+  * *relative_dose_1d* se incorpora al índice de paquetes python [PyPi](https://pypi.org/)
+

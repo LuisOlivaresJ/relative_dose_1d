@@ -22,7 +22,8 @@ from PyQt6.QtCore import Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import FigureCanvas
 
-from read_1D_data import txt_to_list, separar_curvas_w2CAD, obtener_datos_w2CAD, obtener_datos_mcc, get_from_txt
+#from read_1D_data import txt_to_list, separar_curvas_w2CAD, obtener_datos_w2CAD, obtener_datos_mcc, get_from_txt
+from relative_dose_1d.read_1D_data import txt_to_list, separar_curvas_w2CAD, obtener_datos_w2CAD, obtener_datos_mcc, get_from_txt
 
 class Main_Window(QWidget):
 
@@ -272,8 +273,13 @@ class Q_Bloque_grafica:
 
         self.fig.canvas.draw()        
 
-#Run the program
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = Main_Window()
     sys.exit(app.exec())
+
+app = QApplication(sys.argv)
+window = Main_Window()
+sys.exit(app.exec())
