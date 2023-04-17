@@ -45,10 +45,6 @@ Posteriormente, escribimos:
 import relative_dose_1d.GUI
 ```
 
-## Agradecimientos
-Al M. en C. Jose Alfredo Herrera González, y a su estudiante Laura H. por compartirme ideas para el desarrollo
-de este código.
-
 ### Versiones
 Abril-2023  Versión 0.0.3<br/>
   * *relative_dose_1d* se incorpora al índice de paquetes python [PyPi](https://pypi.org/)
