@@ -2,7 +2,7 @@
 
 Tool to read 1-dimensional dose profiles and perform gamma index comparison.
 
-![image_gui](/docs/assets/GUI.PNG)
+![image_gui](/docs/assets/GUI_v011.PNG)
 
 ## Introducción
 The data should be in M ​​rows by 2 columns, corresponding to positions and
