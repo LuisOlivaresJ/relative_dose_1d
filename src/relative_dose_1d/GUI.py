@@ -3,212 +3,202 @@
 Created Apr-2023
 
 @author: Luis Alfonso Olivares Jimenez
-Con agradecimiento al M. en C. Jose Alfredo Herrera González por compartirme ideas para el desarrollo
-de este script.
 
-Script para generar una GUI que permita cargar datos 1-D de archivos de texto 
-con perfiles de dosis. Automáticamente se calcula la resta y el índice gamma.
+GUI to load text data corresponding to dose profiles and PDD. 
 
-Leer el archivo README.md para una mayor descripción.
+The data should be in M ​​rows by 2 columns, corresponding to positions and
+dose values, respectively.
+
+The script has been tested with the following examples:
+
+    * File in w2CAD format (format used by the TPS Eclipse 16.1, from the Varian(R) company).
+      In the algorithm, the start of the data is identified by the words: '$STOM' or '$STOD'
+      Physical unit assumed to be in mm.
+
+    * File in mcc format (format used by Verisoft 7.1.0.199 software, from PTW(R) company).
+      In the algorithm, the beginning of the data is identified by the word: 'BEGIN_DATA'
+      Physical unit assumed to be in mm.
+
+    * File in text format
+      The data must be distributed in M ​​rows by 2 columns and separated
+      for a blank space.
+      The script ask for a word to identify the beginning of the data in the text file, 
+      a number to add to the positions, and a factor for distance dimension conversion.
+
+After two successful loaded data, gamma index and dose difference are automatically calculated.
+
 """
 
 import sys
 import os
 import numpy as np
-from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, 
-                             QPushButton, QMessageBox, QFileDialog, QVBoxLayout)
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QHBoxLayout,
+                             QPushButton, QMessageBox, QFileDialog, QVBoxLayout,
+                             QFormLayout, QInputDialog, QMainWindow)
 from PyQt6.QtCore import Qt
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import FigureCanvas
 
-#from read_1D_data import txt_to_list, separar_curvas_w2CAD, obtener_datos_w2CAD, obtener_datos_mcc, get_from_txt
-from relative_dose_1d.read_1D_data import txt_to_list, separar_curvas_w2CAD, obtener_datos_w2CAD, obtener_datos_mcc, get_from_txt
+from tools import identify_format, get_data, gamma_1D
 
 class Main_Window(QWidget):
 
     def __init__(self):
         """Constructor for Empty Window Class"""
         super().__init__()
+        self.loaded_data = []
         self.initializeUI()
 
     def initializeUI(self):
         """Set up the apllication"""
         "x, y, width, height"
-        self.setGeometry(200,100,800,400)
+        self.setGeometry(200,100,1000,400)
         self.setWindowTitle("Relative dose 1D")
 
-        self.setUp()
+        self.set_up()
         self.show()
 
-    def setUp(self):
-        "Definir layout"
-        self.v_box_layout = QVBoxLayout() # Create layout
+    def set_up(self):
+        "Layouts definition"
+        self.main_box_layout = QVBoxLayout()
 
-        self.open_file_button = QPushButton("Cargar un archivo...", self)
+        self.open_and_clear_layout = QVBoxLayout()
+        self.main_box_layout.addLayout(self.open_and_clear_layout)
+
+        self.h_box_layout = QHBoxLayout()
+        self.settings_layout_v = QVBoxLayout()
+        self.h_box_layout.addLayout(self.settings_layout_v)
+        self.main_box_layout.addLayout(self.h_box_layout)
+
+        self.setLayout(self.main_box_layout)
+
+        self.open_file_button = QPushButton("Load a text file", self)
         self.open_file_button.clicked.connect(self.open_file_button_clicked)
 
-        self.borrar_button = QPushButton("Borrar", self)
-        self.borrar_button.clicked.connect(self.borrar_grafica)
+        self.clear_button = QPushButton("Clear", self)
+        self.clear_button.clicked.connect(self.clear_data_and_plots)
         
-        self.Q_grafica = Q_Bloque_grafica() 
+        self.button_factor = QPushButton("Scale factor", self)
+        self.button_factor.clicked.connect(self.factor_button_clicked)
+        self.button_factor.setFixedSize(75, 40)
+        self.button_factor.setEnabled(False)
+
+        self.button_origin = QPushButton("Move origin", self)
+        self.button_origin.clicked.connect(self.move_button_clicked)
+        self.button_origin.setFixedSize(75, 40)
+        self.button_origin.setEnabled(False)
+        self.settings_layout_v.addWidget(self.button_factor)
+        self.settings_layout_v.addWidget(self.button_origin)
+        self.settings_layout_v.addStretch()
+        self.Q_grafica = Q_Graphic_Block() 
+        self.h_box_layout.addWidget(self.Q_grafica.Qt_fig)
          
-        self.v_box_layout.addWidget(self.open_file_button)
-        self.v_box_layout.addWidget(self.borrar_button)
-        self.v_box_layout.addWidget(self.Q_grafica.Qt_fig)
+        self.open_and_clear_layout.addWidget(self.open_file_button)
+        self.open_and_clear_layout.addWidget(self.clear_button)
+        
 
-        self.setLayout(self.v_box_layout)
-
-    # Funciones para los botones
+    # Button's functions
 
     def open_file_button_clicked(self):
-        file_name, _ = QFileDialog.getOpenFileName()
-        _ , extension = os.path.splitext(file_name)
+        self.last_file_name, _ = QFileDialog.getOpenFileName()
+        _ , extension = os.path.splitext(self.last_file_name)
 
-        if file_name:    #   ¿Se obtuvo algún archivo?
-            lista_principal = txt_to_list(file_name)
+        if self.last_file_name:
+            with open(self.last_file_name, encoding='UTF-8', mode = 'r') as file:
+                all_list = [line.strip() for line in file]
 
-            formato = identificar_formato(lista_principal)
+            format = identify_format(all_list)
 
-            if formato == 'varian':
-                all_data = separar_curvas_w2CAD(lista_principal)
+            if format == 'text_file':
+                self.show_new_window()  #New window for input user parameters.
 
-                if all_data[0][0] == '$STOM' or all_data[0][0] == '$STOD':
-                    valores = obtener_datos_w2CAD(all_data[0])
-                    self.Q_grafica.set_data_and_plot(valores)
+            else:
+                data = get_data(self.last_file_name)
+                self.load_data(data)
 
-            if formato == 'ptw':
-                #all_data = separar_curvas_w2CAD_mcc(lista_principal)
-                valores = obtener_datos_mcc(lista_principal)
-                self.Q_grafica.set_data_and_plot(valores)
 
-            if formato == 'txt':
-                print('Dentro de txt format')
-                valores = get_from_txt(lista_principal) 
-                self.Q_grafica.set_data_and_plot(valores)
-
-        if len(self.Q_grafica.last_data) == 2:
-            self.open_file_button.setEnabled(False)
-            self.calc_difference_and_gamma()
-
-    def borrar_grafica(self):
+    def clear_data_and_plots(self):
         self.Q_grafica.ax_perfil.clear()
         self.Q_grafica.ax_perfil_resta.clear()
         self.Q_grafica.ax_gamma.clear()
         self.Q_grafica.fig.canvas.draw()
         self.open_file_button.setEnabled(True)
-        self.Q_grafica.last_data = []
+        self.loaded_data = []
 
-    #   Definición de funciones adicionales
+    def factor_button_clicked(self):
+        scale_factor, ok = QInputDialog.getText(self, 'Scale factor', 'Scale factor:')
+        try:
+            scale_factor = float(scale_factor)
+            if ok:
+                self.loaded_data[-1][:,0] = self.loaded_data[-1][:,0] * scale_factor
+                cache_data = self.loaded_data
+                self.clear_data_and_plots()
+
+                for data in cache_data:
+                    self.load_data(data)
+
+        except ValueError:
+            QMessageBox().critical(self, "Error", "Enter a number.")
+            print('Error, give a number.')
+
+    def move_button_clicked(self):
+        delta, ok = QInputDialog.getText(self, 'Scale factor', 'Origin displacement:')
+        try:
+            delta = float(delta)
+            if ok:
+                self.loaded_data[-1][:,0] = self.loaded_data[-1][:,0] + delta
+                cache_data = self.loaded_data
+                self.clear_data_and_plots()
+
+                for data in cache_data:
+                    self.load_data(data)
+
+        except ValueError:
+            QMessageBox().critical(self, "Error", "Enter a number.")
+            print('Error, give a number.')        
+
+    def show_new_window(self):
+        start_word, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Start word:')
+        if ok:
+            data = get_data(self.last_file_name, start_word)
+        else:
+            data = get_data(self.last_file_name)
+                
+        self.load_data(data)
+    
+    #   Additional functions
+
+    def load_data(self, data):
+        
+        self.loaded_data.append(data)       
+        self.Q_grafica.plot_data(data)
+        self.button_factor.setEnabled(True)
+        self.button_origin.setEnabled(True)
+        if len(self.loaded_data) == 2:
+            self.calc_difference_and_gamma()
 
     def calc_difference_and_gamma(self):
 
-        data_A = self.Q_grafica.last_data[0]
-        data_B = self.Q_grafica.last_data[1]
+        data_A = self.loaded_data[0]
+        data_B = self.loaded_data[1]
 
-        # Se calcula el perfil B en las posiciones de A, con base en interpolación.
+        # Using interpolation, new values ​​of B are computed at positions given by A.
         data_B_from_A_positions = np.interp(data_A[:,0], data_B[:,0], data_B[:,1], left = np.nan)
     
         difference = data_A[:,1] - data_B_from_A_positions
 
         added_positions = np.array((data_A[:,0], difference))
         values = np.transpose(added_positions)
-
-        # min_position y max_position permitirán acotar la región a analizar.
-        min_position = np.max( (np.min(data_A[:,0]), np.min([data_B[:,0]])) )
-        max_position = np.min( (np.max(data_A[:,0]), np.max([data_B[:,0]])) )        
-        g, g_percent = gamma_1D(data_A, data_B, min_position = min_position, max_position = max_position)
+       
+        g, g_percent = gamma_1D(data_A, data_B)
 
         self.Q_grafica.plot_resta(values)
         self.Q_grafica.plot_gamma(g)
-
-#   Funciones adicionales
-
-def identificar_formato(list):
-
-    if list[0][0] == '$':
-        return 'varian'
-
-    if list[0] == 'BEGIN_SCAN_DATA':
-        return 'ptw'
-    try:
-        num_float = float(list[0][0])
-        return 'txt'
-    
-    except ValueError:
-        print("Archivo en formato no valido")
-        # Crea una instancia de QMessageBox
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Icon.Information)  # Establece el ícono de advertencia
-        msg.setWindowTitle("Advertencia")
-        msg.setText("Archivo en formato no valido.")
-        # Muestra la ventana emergente y espera a que se cierre
-        msg.exec()
-
-def gamma_1D(ref, eval, min_position, max_position, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
-
-    '''
-    Calculo del índice gamma 1-dimensional para dos perfiles de dosis.
-    Los perfiles deberán de encontrarse normalizados del 0 al 100.
-
-     dose_t : float, default = 3
-            Tolerancia para la diferencia en dosis [%]
-
-        dist_t : float, default = 3
-            Tolerancia para la distancia, en milímetros (criterio DTA).
-        dose_tresh : float, default = 10
-            Umbral de dosis, en porcentaje (0 a 100). 
-            Todo punto en la distribución con un valor menor al umbral es excluido del análisis.
-    '''
-    num_of_points = ref.shape[0]
-    interp_positions = np.linspace(ref[0,0], ref[-1,0], (interpol + 1)*(num_of_points - 1) + 1, endpoint=True)
-    eval_from_interp_positions = np.interp(interp_positions, eval[:,0], eval[:,1], left = np.nan, right = np.nan) 
-    added_positions = np.array((interp_positions, eval_from_interp_positions))
-    eval_from_interp_positions = np.transpose(added_positions)
-
-    #   Para almacenar temporalmente los valores de la función Gamma por cada punto en la distribución de referencia
-    gamma = np.zeros( (num_of_points, 2) )
-    gamma[:,0] = ref[:,0]
-
-    for i in range(num_of_points):
-
-        if (ref[i,0] < min_position) or (ref[i,0] > max_position):  
-            #Si la dimension del perfil de referencia es mayor a la dimensión del perfil a evaluar, se ignoran las 
-            # posiciones que se encuentran fuera de la región definida por "min_position" and "max_position".
-            gamma[i, 1] = np.nan
-            continue
-
-        Gamma_acumulado = np.array([])  # Para acumular el cálculo Gamma de todos los puntos del perfil a evaluar.
-        for j in range(eval_from_interp_positions.shape[0]):
-
-            dose_difference = ref[i,1] - eval_from_interp_positions[j,1]
-            distance = ref[i,0] - eval_from_interp_positions[j,0]
-
-            Gamma = np.sqrt(
-                        (distance**2) / (dist_t**2)
-                        + (dose_difference**2) / (dose_t**2))
-                        
-            Gamma_acumulado = np.append(Gamma_acumulado, Gamma)
-
-        gamma[i,1] = np.min( Gamma_acumulado[ ~np.isnan(Gamma_acumulado) ] )
-        if ref[i,1] < dose_tresh:
-            gamma[i,1] = np.nan
-
-    # Arroja las coordenadas en donde los valores gamma son menor o igual a 1
-    less_than_1_coordinate = np.where(gamma[:,1] <= 1)
-    # Cuenta el número de coordenadas en donde se cumple que gamma <= 1
-    less_than_1 = np.shape(less_than_1_coordinate)[1]
-    # Número de valores gamma diferentes de np.nan
-    total_points = np.shape(gamma)[0] - np.shape(np.where(np.isnan(gamma[:,1])))[1]
-
-    #   Índice de aprobación
-    gamma_percent = float(less_than_1)/total_points*100
-
-    return gamma, gamma_percent
-    
+        print(g_percent)
 
     
-class Q_Bloque_grafica:
+class Q_Graphic_Block:
         
     def __init__(self):
         self.fig = Figure(figsize=(4,3), tight_layout = True, facecolor = 'whitesmoke')
@@ -216,44 +206,33 @@ class Q_Bloque_grafica:
 
         #   Axes para la imagen
         self.ax_perfil = self.fig.add_subplot(1, 2, 1)
-        self.ax_perfil.set_title('Perfiles')
-        self.ax_perfil.set_ylabel('Porcentaje [%]')
-        self.ax_perfil.set_xlabel('Distancia [mm]')
+        #self.ax_perfil.set_title('Pro')
+        self.ax_perfil.set_ylabel('Percentage [%]')
+        self.ax_perfil.set_xlabel('Distance')
         self.ax_perfil.grid(alpha = 0.3)
 
         self.ax_perfil_resta =  self.fig.add_subplot(1, 2, 2)
         #self.ax_perfil_resta.set_title('Resta')
-        self.ax_perfil_resta.set_ylabel('Porcentaje [%]')
-        self.ax_perfil_resta.set_xlabel('Distancia [mm]')
+        self.ax_perfil_resta.set_ylabel('Percentage [%]')
+        self.ax_perfil_resta.set_xlabel('Distance')
         self.ax_perfil_resta.grid(alpha = 0.3)
 
         self.ax_gamma = self.ax_perfil_resta.twinx()
         self.ax_gamma.set_ylabel('gamma')
         #self.ax_gamma.set_ylim((0, 2))
-
-        self.last_data = []
         
-    def set_data_and_plot(self, data):
+    def plot_data(self, data):
         x = data[:,0]
         y = data[:,1]
-        #self.ax_perfil.clear()
         self.ax_perfil.plot(x, y)
-        self.ax_perfil.set_ylabel('Porcentaje [%]')
-        self.ax_perfil.set_xlabel('Distancia [mm]')
+        self.ax_perfil.set_ylabel('Percentage [%]')
+        self.ax_perfil.set_xlabel('Distance')
         self.ax_perfil.grid(alpha = 0.3)
-
         self.fig.canvas.draw()
-
-        self.save_last_data(data)
-        
-        
-    def save_last_data(self, data):
-        self.last_data.append(data)
         
     def plot_resta(self, data):
         x = data[:,0]
         y = data[:,1]
-        #self.ax_perfil.clear()
         self.ax_perfil_resta.plot(x, y, color='r', label = 'Diferencia', alpha = 0.6)
         self.ax_perfil_resta.set_ylabel('Diferencia')
         self.ax_perfil_resta.set_xlabel('Distancia [mm]')
@@ -270,16 +249,10 @@ class Q_Bloque_grafica:
         self.ax_gamma.set_ylabel('gamma')
         self.ax_gamma.legend(loc = 'upper right')
 
-
         self.fig.canvas.draw()        
 
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = Main_Window()
-    sys.exit(app.exec())
-
+        
 app = QApplication(sys.argv)
 window = Main_Window()
 sys.exit(app.exec())
+
