@@ -40,7 +40,9 @@ from PyQt6.QtCore import Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import FigureCanvas
 
-from tools import identify_format, get_data, gamma_1D
+from relative_dose_1d.tools import identify_format, get_data, gamma_1D
+# For testing
+#from tools import identify_format, get_data, gamma_1D
 
 class Main_Window(QWidget):
 
