@@ -42,6 +42,7 @@ def text_to_list(file_name):
     
     Returns
     -------
+
     out : list
         Loaded data as a list.
     
@@ -58,6 +59,7 @@ def identify_format(data_list):
     ----------
 
     data_list : list
+
         Each element of the list represents a line from the text file.
 
     Returns
@@ -122,7 +124,6 @@ def get_data(file_name,
     out : ndarray
         Data as a Numpy object
     
-        
     Examples
     --------
     (Todo) Add some exaples
@@ -230,6 +231,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
 
     out : ndarray, float
         gamma distribution and gamma percent
+        
     '''
 
     # min_position and max_position to analize.

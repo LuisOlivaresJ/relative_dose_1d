@@ -10,12 +10,12 @@ dose values, respectively.
 
 The package has been tested with the following examples:
 
-* File in w2CAD format (format used by the TPS Eclipse 16.1, from the Varian(R) company).
+* File in w2CAD format (used by the TPS Eclipse 16.1, Varian(R) company).
 
     In the algorithm, the start of the data is identified by the words: 'STOM' or 'STOD'
     Physical unit assumed to be in mm.
 
-* File in mcc format (format used by Verisoft 7.1.0.199 software, from PTW(R) company).
+* File in mcc format (Verisoft 7.1.0.199 software, from PTW(R) company).
 
     In the algorithm, the beginning of the data is identified by the word: 'BEGIN_DATA'
     Physical unit assumed to be in mm.

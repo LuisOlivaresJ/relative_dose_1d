@@ -7,3 +7,5 @@ chapters:
 - file: installation
 - file: Getting_Started
 - file: API
+- file: contributing
+- file: changelog
