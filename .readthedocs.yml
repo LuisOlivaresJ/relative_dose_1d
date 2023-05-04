@@ -12,7 +12,7 @@ build:
 
 python:
    install:
-   - requirements: docs/requirements.txt
+   - requirements: docs/Jupyter_Book/requirements.txt
 #   - method: pip
 #     path: .
 
