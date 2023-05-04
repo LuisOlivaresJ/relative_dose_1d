@@ -34,15 +34,16 @@ def text_to_list(file_name):
     Convert a text file to a python list. Each element of the list 
     represents a line from the text file.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
 
-    file_name: string
+    file_name : string
+        Text file name
     
-    Return
-    ------
-
-    return: list
+    Returns
+    -------
+    out : list
+        Loaded data as a list.
     
     """
     with open(file_name, encoding='UTF-8', mode = 'r') as file:
@@ -51,21 +52,24 @@ def text_to_list(file_name):
 
 def identify_format(data_list):
     """
-    Identify text format
+    Identify text format.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
 
-    data_list: list
+    data_list : list
         Each element of the list represents a line from the text file.
 
-    Return
-    ------
+    Returns
+    -------
 
-    return: string
+    out : string
         'varian' for w2CAD format, identified by the '$' character at the beginning of the file.
+
         'ptw' for mcc fromat, identified by the word 'BEGIN_SCAN_DATA'.
+
         'just_numbers' for data without headers.
+        
         'text_file' for other formats. 
 
     """
@@ -99,29 +103,29 @@ def get_data(file_name,
     Parameters
     ----------
 
-    file_name: string
+    file_name : string
         Name of the file
 
-    start_word: string 
+    start_word : string 
         Word to identify the beginning of the data
 
-    end_word: string 
+    end_word : string 
         Word to identify the end of the data
 
-    delta: float 
+    delta : float 
         Displacement in mm to define the started point
     
         
     Returns
-    ------
+    -------
 
-    out: numpy-array
+    out : ndarray
         Data as a Numpy object
     
         
     Examples
     --------
-    TODO_ Add some exaples
+    (Todo) Add some exaples
     
     """
 
@@ -198,20 +202,34 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     1-dimensional gamma index calculation.
     Dose profiles have to be normalized (0-100%).
 
-    dose_t: float, default = 3
+    Parameters
+    ----------
+
+    ref : ndarray,
+        Reference dose profile represented by a (M, 2) numpy array.  
+
+    eva : ndarray,
+        Dose profile to be evaluated, represented by a (N, 2) numpy array.  
+
+    dose_t : float, default = 3
             Dose tolerance [%].
 
-    dist_t: float, default = 3
+    dist_t : float, default = 2
         Distance to agreement [mm].
 
-    dose_threshold: float, default = 10
+    dose_threshold : float, default = 0
         Dose threshold [%].
-
         Any point in the distribution with a dose value less than the threshold 
         is going to be excluded from the analysis.
     
-    interpol: float, default = 1
+    interpol : float, default = 1
         Number of interpolated points to generate between each two consecutive points in "eval" data.
+
+    Returns
+    -------
+
+    out : ndarray, float
+        gamma distribution and gamma percent
     '''
 
     # min_position and max_position to analize.

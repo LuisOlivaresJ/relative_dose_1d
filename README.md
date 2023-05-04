@@ -1,41 +1,36 @@
 # relative_dose_1d
 
-Tool to read 1-dimensional dose profiles and perform gamma index comparison.
+Python package to read an 1-dimensional dose profile from text file and perform subtraction and gamma index comparison.
 
 ![image_gui](/docs/assets/GUI_v011.PNG)
 
-## Introducción
+## Format specifications
 The data should be in M ​​rows by 2 columns, corresponding to positions and
 dose values, respectively.
 
-The script has been tested with the following examples:
+The package has been tested with the following examples:
 
-    * File in w2CAD format (format used by the TPS Eclipse 16.1, from the Varian(R) company).
-      In the algorithm, the start of the data is identified by the words: '$STOM' or '$STOD'
-      Physical unit assumed to be in mm.
+* File in w2CAD format (format used by the TPS Eclipse 16.1, from the Varian(R) company).
+  In the algorithm, the start of the data is identified by the words: 'STOM' or 'STOD'
+  Physical unit assumed to be in mm.
 
-    * File in mcc format (format used by Verisoft 7.1.0.199 software, from PTW(R) company).
-      In the algorithm, the beginning of the data is identified by the word: 'BEGIN_DATA'
-      Physical unit assumed to be in mm.
+* File in mcc format (format used by Verisoft 7.1.0.199 software, from PTW(R) company).
+  In the algorithm, the beginning of the data is identified by the word: 'BEGIN_DATA'
+  Physical unit assumed to be in mm.
 
-    * File in text format
-      The data must be distributed in M ​​rows by 2 columns and separated
-      for a blank space.
-      The script ask for a word to identify the beginning of the data in the text file, 
-      a number to add to the positions, and a factor for distance dimension conversion.
+* File in text format
+  The data must be distributed in M ​​rows by 2 columns and separated
+  for a blank space.
+  The script ask for a word to identify the beginning of the data in the text file, 
+  a number to add to the positions, and a factor for distance dimension conversion.
 
-For proper operation, the text file must meet the following characteristics:
-
-1. Contain a single profile
-2. The data should be in M ​​rows and two columns, (M, 2).
-
-## Instalación
-**En Linux**<br/>
+## Installation
+**Linux**<br/>
 The easiest method of installation is by typing in a terminal:
 ```bash
 pip install relative_dose_1d
 ```
-**En Windows**<br/>
+**Windows**<br/>
 
 Prior to installation, it is necessary to have a python package manager. If you are not familiar with Python packages, it is recommended to use [ANACONDA](https://www.anaconda.com/products/individual).
 After ANACONDA has been installed, open *Anaconda Prompt*. Once inside the terminal (window with a black background), follow the indication described for Linux (previous paragraph).
@@ -60,4 +55,5 @@ April-2023  Versión 0.0.3
 May-2023 Version 0.1.0
   * It is now possible to perform unit transformation for distance using a multiplication factor, and move the origin of the coordinate system.
 
-
+May-2023 Version 0.1.2
+  * New web page for documentation, following [PEP 287 – reStructuredText Docstring Format](https://peps.python.org/pep-0287/).
