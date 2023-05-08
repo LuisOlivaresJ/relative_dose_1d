@@ -43,13 +43,14 @@ def text_to_list(file_name):
     Returns
     -------
 
-    out : list
+    list
         Loaded data as a list.
     
     """
     with open(file_name, encoding='UTF-8', mode = 'r') as file:
         data_list = [line.strip() for line in file]    
     return data_list
+
 
 def identify_format(data_list):
     """
@@ -59,13 +60,12 @@ def identify_format(data_list):
     ----------
 
     data_list : list
-
         Each element of the list represents a line from the text file.
 
     Returns
     -------
 
-    out : string
+    string
         'varian' for w2CAD format, identified by the '$' character at the beginning of the file.
 
         'ptw' for mcc fromat, identified by the word 'BEGIN_SCAN_DATA'.
@@ -121,12 +121,8 @@ def get_data(file_name,
     Returns
     -------
 
-    out : ndarray
+    ndarray
         Data as a Numpy object
-    
-    Examples
-    --------
-    (Todo) Add some exaples
     
     """
 
@@ -152,7 +148,7 @@ def get_data(file_name,
         data_array[:,1] = 100*data_array[:,1]/np.amax(data_array[:,1])
         
 
-    #   MCC format (PTW)     
+    #   mcc format (PTW)     
 
     elif file_format == 'ptw':
 
@@ -198,7 +194,6 @@ def get_data(file_name,
 
 
 def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
-
     '''
     1-dimensional gamma index calculation.
     Dose profiles have to be normalized (0-100%).
@@ -229,7 +224,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     Returns
     -------
 
-    out : ndarray, float
+    ndarray, float
         gamma distribution and gamma percent
         
     '''

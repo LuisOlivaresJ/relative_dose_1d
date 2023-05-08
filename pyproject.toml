@@ -32,9 +32,9 @@ dependencies = [
   "PyQt6 >= 6.4.2",
 ]
 [project.urls]
-homepage = "https://github.com/LuisOlivaresJ/relative_dose_1d"
+homepage = "https://relative-dose-1d.readthedocs.io/en/latest/intro.html"
 repository = "https://github.com/LuisOlivaresJ/relative_dose_1d"
-Bug-Tracker = "https://github.com/LuisOlivaresJ/relative_dose_1d"
+Bug-Tracker = "https://github.com/LuisOlivaresJ/relative_dose_1d/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
