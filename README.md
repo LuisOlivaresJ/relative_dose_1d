@@ -4,6 +4,8 @@ Python package to read an 1-dimensional dose profile from text file and perform 
 
 ![image_gui](/docs/assets/GUI_v011.PNG)
 
+## [Documentation](https://relative-dose-1d.readthedocs.io/en/latest/intro.html)
+
 ## Format specifications
 The data should be in M ​​rows by 2 columns, corresponding to positions and
 dose values, respectively.
