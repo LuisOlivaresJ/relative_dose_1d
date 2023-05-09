@@ -233,7 +233,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     min_position = np.max( (np.min(ref[:,0]), np.min([eval[:,0]])) )
     max_position = np.min( (np.max(ref[:,0]), np.max([eval[:,0]])) ) 
 
-    num_of_points = ref.shape[0]
+    num_of_points = eval.shape[0]
     interp_positions = np.linspace(ref[0,0], ref[-1,0], (interpol + 1)*(num_of_points - 1) + 1, endpoint=True)
     eval_from_interp_positions = np.interp(interp_positions, eval[:,0], eval[:,1], left = np.nan, right = np.nan) 
     add_positions = np.array((interp_positions, eval_from_interp_positions))
