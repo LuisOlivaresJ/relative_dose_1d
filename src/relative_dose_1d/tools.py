@@ -193,6 +193,22 @@ def get_data(file_name,
     return data_array
 
 
+def build_from_array_and_resolution(array, step):
+    """Create the requiered shape (M,2) from 1D numpy array. 
+    The position of each value is builded with evenly step spacing.
+
+    Parameters
+    ----------
+
+    array : ndarrya,
+        Numpy 1D array with profile values
+
+    resolution : float,
+        The spacing between samples
+      
+    """
+
+
 def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     '''
     1-dimensional gamma index calculation.
