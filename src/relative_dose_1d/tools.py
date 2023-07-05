@@ -194,7 +194,7 @@ def get_data(file_name,
 
 
 def build_from_array_and_step(array, step):
-    """Create a new array with the same length but an additional axis. The first column represents the 
+    """Create a new array with the same length but with an additional axis. The first column represents the 
     physical positions of the given values. The second column is a copy of the given array. 
     The positions are builded with evenly step spacing starting from zero.
 
@@ -204,7 +204,7 @@ def build_from_array_and_step(array, step):
     array : ndarrya,
         Numpy 1D array with the profile values
 
-    resolution : float,
+    step : float,
         The spacing between samples
 
     Returns
