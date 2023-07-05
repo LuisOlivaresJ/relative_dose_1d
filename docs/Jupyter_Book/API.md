@@ -13,5 +13,9 @@
 ```
 
 ```{eval-rst}
+.. autofunction:: relative_dose_1d.tools.build_from_array_and_step
+```
+
+```{eval-rst}
 .. autofunction:: relative_dose_1d.tools.gamma_1D
 ```

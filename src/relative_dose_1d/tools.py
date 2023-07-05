@@ -193,21 +193,60 @@ def get_data(file_name,
     return data_array
 
 
-def build_from_array_and_resolution(array, step):
-    """Create the requiered shape (M,2) from 1D numpy array. 
-    The position of each value is builded with evenly step spacing.
+def build_from_array_and_step(array, step):
+    """Create a new array with the same length but an additional axis. The first column represents the 
+    physical positions of the given values. The second column is a copy of the given array. 
+    The positions are builded with evenly step spacing starting from zero.
 
     Parameters
     ----------
 
     array : ndarrya,
-        Numpy 1D array with profile values
+        Numpy 1D array with the profile values
 
     resolution : float,
         The spacing between samples
-      
+
+    Returns
+    -------
+
+    array, ndarray
+        A new array with shape (M,2), where M is the shape of array.
+
+    Examples
+    --------
+
+    >>> y = np.array([2,4,6,8,10])
+    >>> A = build_from_array_and_step(y, 0.5)
+    [ 
+    [0.0, 2] 
+    [0.5, 4]         
+    [1.0, 6]
+    [1.5, 8]
+    [2.0, 10]]
+
+    >>> y = np.arange(6)
+    >>> B = build_from_array_and_step(y, 3)
+    [
+    [0, 0]
+    [3, 1]
+    [6, 2]
+    [9, 3]
+    [12, 4]]
+
     """
 
+    num = array.shape[0]
+    start = 0
+    stop = (num - 1) * step
+
+    positions = np.linspace(start, stop, num = num, endpoint = True)
+    profile = np.zeros((num, 2))
+    profile[:,0] = positions
+    profile[:,1] = array
+
+    return profile
+    
 
 def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     '''
@@ -296,14 +335,22 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
 
 if __name__ == '__main__':
 
+    y = np.array([2,4,6,8,10])
+    A = build_from_array_and_step(y, 0.5)
+    print(A)
+
+    y = np.arange(10)
+    B = build_from_array_and_step(y, 3)
+    print(B)
+
     """Test files"""
     #file_name = './test_data/test_ptw.mcc'
     #file_name = './test_data/test_varian.data'
-    file_name = './test_data/test_txt.txt'
+    #file_name = './test_data/test_txt.txt'
 
-    file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
+    #file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
     
-    data_ref = get_data(file_name, start_word =  'Field 1')
-    data_eval = get_data(file_name_eval)
-    g, gp = gamma_1D(data_ref, data_eval)
-    print(gp)
+    #data_ref = get_data(file_name, start_word =  'Field 1')
+    #data_eval = get_data(file_name_eval)
+    #g, gp = gamma_1D(data_ref, data_eval)
+    #print(gp)
