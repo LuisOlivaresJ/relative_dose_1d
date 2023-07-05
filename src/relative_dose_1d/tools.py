@@ -192,8 +192,6 @@ def get_data(file_name,
     
     return data_array
 
-def plot_data_and_results(D_ref, D_eval):
-    """"A function to plot the given profiles, gamma and difference comparision"""
 
 def build_from_array_and_step(array, step):
     """Create a new array with the same length but with an additional axis. The first column represents the 
