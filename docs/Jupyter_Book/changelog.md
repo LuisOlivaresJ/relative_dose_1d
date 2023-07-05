@@ -12,5 +12,5 @@
 ## May-2023 Version 0.1.3
 * [Interpolation error](https://github.com/LuisOlivaresJ/relative_dose_1d/issues/1) solved.
 
-## Jul-2023 Version 0.1.4
-* A new function to create a an array with physical positions.
+## Jul-2023 Version 0.1.4 - 0.1.5
+* A new function to create an array with physical positions.

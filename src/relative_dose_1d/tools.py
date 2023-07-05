@@ -192,10 +192,12 @@ def get_data(file_name,
     
     return data_array
 
+def plot_data_and_results(D_ref, D_eval):
+    """"A function to plot the given profiles, gamma and difference comparision"""
 
 def build_from_array_and_step(array, step):
     """Create a new array with the same length but with an additional axis. The first column represents the 
-    physical positions of the given values. The second column is a copy of the given array. 
+    physical positions of the given values. The second column is a normalization of the given array. 
     The positions are builded with evenly step spacing starting from zero.
 
     Parameters
@@ -243,7 +245,7 @@ def build_from_array_and_step(array, step):
     positions = np.linspace(start, stop, num = num, endpoint = True)
     profile = np.zeros((num, 2))
     profile[:,0] = positions
-    profile[:,1] = array
+    profile[:,1] = array / np.max(array) * 100
 
     return profile
     
