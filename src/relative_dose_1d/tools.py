@@ -248,7 +248,7 @@ def build_from_array_and_step(array, step):
     return profile
     
 
-def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
+def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_threshold = 0, interpol = 1):
     '''
     1-dimensional gamma index calculation.
     Dose profiles have to be normalized (0-100%).
@@ -284,7 +284,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
         
     '''
 
-    # min_position and max_position to analize.
+    # min_position and max_position to analyze.
     min_position = np.max( (np.min(ref[:,0]), np.min([eval[:,0]])) )
     max_position = np.min( (np.max(ref[:,0]), np.max([eval[:,0]])) ) 
 
@@ -294,11 +294,14 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     add_positions = np.array((interp_positions, eval_from_interp_positions))
     eval_from_interp_positions = np.transpose(add_positions)
 
-    #   A variable to storage gamma calculations.
-    gamma = np.zeros( (num_of_points, 2) )
+    #   A variable to store gamma calculations.
+    gamma = np.zeros( (ref.shape[0], 2) )
+    print(num_of_points)
+    print(ref.shape[0])
+    print(interp_positions.shape[0])
     gamma[:,0] = ref[:,0]   #Add the same positions.
 
-    for i in range(num_of_points):
+    for i in range(ref.shape[0]):
 
         if (ref[i,0] < min_position) or (ref[i,0] > max_position):  
 
@@ -318,7 +321,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
             Gamma_appended = np.append(Gamma_appended, Gamma)
 
         gamma[i,1] = np.min( Gamma_appended[ ~np.isnan(Gamma_appended) ] )
-        if ref[i,1] < dose_tresh:
+        if ref[i,1] < dose_threshold:
             gamma[i,1] = np.nan
 
     # Coordinates for gamma values <= 1.
@@ -334,7 +337,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
 
 
 if __name__ == '__main__':
-
+    """
     y = np.array([2,4,6,8,10])
     A = build_from_array_and_step(y, 0.5)
     print(A)
@@ -343,14 +346,15 @@ if __name__ == '__main__':
     B = build_from_array_and_step(y, 3)
     print(B)
 
-    """Test files"""
-    #file_name = './test_data/test_ptw.mcc'
+    """
+    #Test files
+    file_name = './test_data/test_ptw.mcc'
     #file_name = './test_data/test_varian.data'
     #file_name = './test_data/test_txt.txt'
 
-    #file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
+    file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
     
-    #data_ref = get_data(file_name, start_word =  'Field 1')
-    #data_eval = get_data(file_name_eval)
-    #g, gp = gamma_1D(data_ref, data_eval)
-    #print(gp)
+    data_ref = get_data(file_name, start_word =  'Field 1')
+    data_eval = get_data(file_name_eval)
+    g, gp = gamma_1D(data_ref, data_eval)
+    print(gp)
