@@ -38,7 +38,7 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QHBoxLayo
 from PyQt6.QtCore import Qt
 
 from relative_dose_1d.tools import identify_format, get_data, gamma_1D
-from relative_dose_1d.GUI_plot import Q_Graphic_Block
+from relative_dose_1d.GUI_plot import Q_Figure_Block
 # For testing
 #from tools import identify_format, get_data, gamma_1D
 
@@ -91,7 +91,7 @@ class Main_Window(QWidget):
         self.settings_layout_v.addWidget(self.button_factor)
         self.settings_layout_v.addWidget(self.button_origin)
         self.settings_layout_v.addStretch()
-        self.Q_grafica = Q_Graphic_Block() 
+        self.Q_grafica = Q_Figure_Block() 
         self.h_box_layout.addWidget(self.Q_grafica.Qt_fig)
          
         self.open_and_clear_layout.addWidget(self.open_file_button)

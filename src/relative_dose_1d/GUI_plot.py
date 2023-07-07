@@ -7,7 +7,7 @@ import numpy as np
 from tools import gamma_1D
 import sys
 
-class Q_Graphic_Block:
+class Q_Figure_Block:
         
     def __init__(self):
         self.fig = Figure(figsize=(4,3), tight_layout = True, facecolor = 'whitesmoke')
@@ -58,9 +58,14 @@ class Q_Graphic_Block:
 
         self.fig.canvas.draw()
 
-def plot_profiles_and_results(P_ref, P_eval):
+def plot_profiles_and_results(
+        P_ref, 
+        P_eval,
+        dose_t = 3,
+        q=1
+        ):
     """"
-    A function to plot the given profiles, gamma and difference comparison.
+    A function to make a new window to show the given profiles, gamma and difference comparison.
     
     Parameters
     ----------
@@ -93,7 +98,7 @@ def plot_profiles_and_results(P_ref, P_eval):
     
     """
 
-    class Main_Window(QWidget):
+    class Window(QWidget):
 
         def __init__(self):
             """Constructor for Empty Window Class"""
@@ -112,7 +117,7 @@ def plot_profiles_and_results(P_ref, P_eval):
         def set_up(self):
             self.main_box_layout = QVBoxLayout()
             self.setLayout(self.main_box_layout)
-            self.Q_grafica = Q_Graphic_Block() 
+            self.Q_grafica = Q_Figure_Block() 
             self.main_box_layout.addWidget(self.Q_grafica.Qt_fig)
 
             data_A = P_ref
@@ -132,10 +137,17 @@ def plot_profiles_and_results(P_ref, P_eval):
             self.Q_grafica.plot_data(P_eval)
             self.Q_grafica.plot_resta(values)
             self.Q_grafica.plot_gamma(g)
-
+    
     app = QApplication(sys.argv)
-    window = Main_Window()
-    sys.exit(app.exec())
+    window = Window()
+
+    def plot_data(Profile):
+        window.Q_grafica.plot_data(Profile)
+    
+    #def plot_gamma
+    
+    def show():
+        sys.exit(app.exec())
 
 if __name__ == '__main__':
 
