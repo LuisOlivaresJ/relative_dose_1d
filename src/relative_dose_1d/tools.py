@@ -211,7 +211,7 @@ def build_from_array_and_step(array, step):
     -------
 
     array, ndarray
-        A new array with shape (M,2), where M is the shape of array.
+        A new array with shape (M,2), where M is the shape of the array.
 
     Examples
     --------

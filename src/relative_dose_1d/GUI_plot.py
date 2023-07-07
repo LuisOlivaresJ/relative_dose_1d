@@ -59,7 +59,39 @@ class Q_Graphic_Block:
         self.fig.canvas.draw()
 
 def plot_profiles_and_results(P_ref, P_eval):
-    """"A function to plot the given profiles, gamma and difference comparision"""
+    """"
+    A function to plot the given profiles, gamma and difference comparison.
+    
+    Parameters
+    ----------
+
+    P_ref : ndarray,
+        A numpy array with shape (M,2), representing a reference profile. 
+        The first column satates the profile positions.
+
+    P_eval : ndarray,
+        A numpy array with shape (M,2), representing the evaluated profile. 
+        The first column satates the profile positions.
+
+    Returns
+    -------
+
+    GUI Window, PyQt
+        A new GUI window showing the profiles, gamma and difference comparison.
+        
+    Examples
+    --------
+
+    >>> from tools import build_from_array_and_step
+
+    >>> a = np.array([2,4,6,8,10])
+    >>> b = a + np.random.random_sample((5,))
+    >>> A = build_from_array_and_step(a, 0.5)
+    >>> B = build_from_array_and_step(b, 0.5)
+
+    >>> plot_profiles_and_results(A,B)
+    
+    """
 
     class Main_Window(QWidget):
 
