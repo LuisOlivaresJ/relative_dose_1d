@@ -6,8 +6,17 @@ Python package to read 1-dimensional dose profile from text file and perform sub
 
 ## [Documentation](https://relative-dose-1d.readthedocs.io/en/latest/intro.html)
 
+## Features
+
+### For gamma analysis
+* Interpolation between points
+* Profile positions does not require to be equal
+
+### For data import
+* PTW (R) and Varian (R) data formats suported.
+
 ## Format specifications
-Data should be in M ​​rows by 2 columns, corresponding to positions and
+Data should be in a numpy array with two columns, corresponding to positions and
 dose values, respectively.
 
 The package has been tested with the following examples:
@@ -73,4 +82,4 @@ May-2023 Version 0.1.3
   * [Interpolation error](https://github.com/LuisOlivaresJ/relative_dose_1d/issues/1) solved.
 
 Jul-2023 Version 0.1.4 - 0.1.5
-  * A new function to create an array with physical positions.
+  * Two new functions, [build_from_array_and_step](Tools_module_label), to add physical positions; and [plot](GUI_tool_module_label) to show a GUI. [New GUI_tool module](GUI_tool_module_label)

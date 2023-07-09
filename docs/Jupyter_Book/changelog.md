@@ -13,4 +13,4 @@
 * [Interpolation error](https://github.com/LuisOlivaresJ/relative_dose_1d/issues/1) solved.
 
 ## Jul-2023 Version 0.1.4 - 0.1.5
-* A new function to create an array with physical positions.
+* Two new functions, [build_from_array_and_step](Tools_module_label), to add physical positions; and [plot](GUI_tool_module_label) to show a GUI. [New GUI_tool module](GUI_tool_module_label)

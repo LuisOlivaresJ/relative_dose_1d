@@ -7,16 +7,36 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QHBoxLayo
                              QFormLayout, QInputDialog, QMainWindow)
 from PyQt6.QtCore import Qt
 import numpy as np
-from relative_dose_1d.tools import identify_format, get_data, gamma_1D
+from relative_dose_1d.tools import identify_format, get_data, gamma_1D, build_from_array_and_step
 import sys
 import os
 
-class Main_Window(QWidget):
+class GUI(QWidget):
 
-    def __init__(self):
-        """Constructor for Empty Window Class"""
+    def __init__(self, D_ref = None, D_eval = None):
+        """Constructor for a graphical user interface (GUI). Data has to be in 2 columns, 
+        corresponding to positions and dose values, respectively.
+
+        Parameters
+        ----------
+
+        D_ref : ndarray,
+            Reference dose profile represented by a (M, 2) numpy array.  
+
+        D_eva : ndarray,
+            Dose profile to be evaluated, represented by a (N, 2) numpy array.
+
+        Returns
+        -------
+
+        A PyQt widget to showing dose profiles, gamma analysis and dose difference.
+
+        """
         super().__init__()
-        self.loaded_data = []
+
+        self.D_ref = D_ref
+        self.D_eval = D_eval
+
         self.initializeUI()
 
     def initializeUI(self):
@@ -25,10 +45,12 @@ class Main_Window(QWidget):
         self.setGeometry(200,100,1000,400)
         self.setWindowTitle("Relative dose 1D")
 
-        self.set_up()
+        self.set_up_window()
+        self.set_up_data()
         self.show()
 
-    def set_up(self):
+    def set_up_window(self):
+
         "Layouts definition"
         self.main_box_layout = QHBoxLayout()
    
@@ -36,7 +58,6 @@ class Main_Window(QWidget):
         self.settings_layout_v = QVBoxLayout()
         
         self.Q_grafica = Q_Base_Figure() 
-
 
         self.main_box_layout.addLayout(self.settings_layout_v)
         self.main_box_layout.addLayout(self.v_box_layout)
@@ -90,6 +111,14 @@ class Main_Window(QWidget):
         self.v_box_layout.addWidget(self.clear_button)
         self.v_box_layout.addWidget(self.Q_grafica.Qt_fig)
         
+    def set_up_data(self):
+        if self.D_ref.any():
+            self.loaded_data = [self.D_ref, self.D_eval]
+            self.Q_grafica.plot_data(self.D_ref, "reference")
+            self.Q_grafica.plot_data(self.D_eval, "evaluated")
+            self.calc_difference_and_gamma()
+        else:
+            self.loaded_data = []
 
     # Button's functions
 
@@ -109,7 +138,6 @@ class Main_Window(QWidget):
             else:
                 data = get_data(self.last_file_name)
                 self.load_data(data)
-
 
     def clear_data_and_plots(self):
         self.Q_grafica.ax_perfil.clear()
@@ -200,7 +228,7 @@ class Main_Window(QWidget):
 class Q_Base_Figure:
         
     def __init__(self):
-        self.fig = Figure(figsize=(10,3), tight_layout = True, facecolor = 'whitesmoke')
+        self.fig = Figure(figsize=(40,4), tight_layout = True, facecolor = 'whitesmoke')
         self.Qt_fig = FigureCanvas(self.fig)
 
         #   Axes para la imagen
@@ -218,22 +246,23 @@ class Q_Base_Figure:
         self.ax_gamma.set_ylabel('gamma')
         #self.ax_gamma.set_ylim((0, 2))
         
-    def plot_data(self, data):
+    def plot_data(self, data, label = None):
         x = data[:,0]
         y = data[:,1]
-        self.ax_perfil.plot(x, y)
+        self.ax_perfil.plot(x, y, label = label)
         self.ax_perfil.set_ylabel('Percentage [%]')
         self.ax_perfil.set_xlabel('Distance [mm]')
         self.ax_perfil.grid(alpha = 0.3)
+        self.ax_perfil.legend()
         self.fig.canvas.draw()
         
     def plot_resta(self, data):
         x = data[:,0]
         y = data[:,1]
-        self.ax_perfil_resta.plot(x, y, color='r', label = 'Diferencia', alpha = 0.6)
-        self.ax_perfil_resta.set_ylabel('Diferencia')
+        self.ax_perfil_resta.plot(x, y, color='r', label = 'Difference', alpha = 0.7)
+        self.ax_perfil_resta.set_ylabel('Difference')
         self.ax_perfil_resta.set_xlabel('Distance [mm]')
-        self.ax_perfil_resta.grid(alpha = 0.3)
+        self.ax_perfil_resta.grid(alpha = 0.4)
         self.ax_perfil_resta.legend(loc = 'upper left')
 
         self.fig.canvas.draw()
@@ -248,113 +277,66 @@ class Q_Base_Figure:
 
         self.fig.canvas.draw()
 
-def plot_profiles_and_comparison(
-        P_ref, 
-        P_eval,
-        dose_t = 3, 
-        dist_t = 2, 
-        dose_tresh = 0, 
-        interpol = 1
-        ):
-    """"
-    A function to make a new window to show the given profiles, gamma and difference comparison.
-    See relative_dose_1d.tools gamma_1d for gamma tolerance parameters.
-    
+def plot(D_red, D_eval):
+    """
+    A function to show a graphical user interface (GUI) to showing 1D dose profiles, 
+    gamma analysis and dose difference. Data has to be in 2 columns, 
+    corresponding to positions and dose values, respectively.
+
     Parameters
     ----------
 
-    P_ref : ndarray,
-        A numpy array with shape (M,2), representing a reference profile. 
-        The first column satates the profile positions.
+    D_ref : ndarray,
+        Reference dose profile represented by a (M, 2) numpy array.  
 
-    P_eval : ndarray,
-        A numpy array with shape (M,2), representing the evaluated profile. 
-        The first column satates the profile positions.
+    D_eva : ndarray,
+        Dose profile to be evaluated, represented by a (N, 2) numpy array.
 
     Returns
     -------
 
-    GUI Window, PyQt
-        A new GUI window showing the profiles, gamma and difference comparison.
-        
+    A GUI showing dose profiles, gamma analysis and dose difference.
+
     Examples
     --------
 
-    >>> from tools import build_from_array_and_step
+    >>> import relative_dose_1d.GUI_tool as rd
 
-    >>> a = np.array([2,4,6,8,10])
+    >>> a = np.array([1,2,3,4,5])
     >>> b = a + np.random.random_sample((5,))
-    >>> A = build_from_array_and_step(a, 0.5)
-    >>> B = build_from_array_and_step(b, 0.5)
 
-    >>> plot_profiles_and_results(A,B)
+    >>> A = build_from_array_and_step(a, 1)
+    >>> B = build_from_array_and_step(b, 1)
     
+    >>> rd.plot(A,B)
+
     """
 
-    class Window(QWidget):
+    app = QApplication(sys.argv)    
+    window = GUI(A, B)
+    sys.exit(app.exec())
 
-        def __init__(self):
-            """Constructor for Empty Window Class"""
-            super().__init__()
-            self.initializeUI()
+def run_demo():
 
-        def initializeUI(self):
-            """Set up the apllication"""
-            "x, y, width, height"
-            self.setGeometry(200,100,1000,400)
-            self.setWindowTitle("Relative dose 1D")
+    a = np.array([1,2,3,4,5])
+    b = a + np.random.random_sample((5,))
 
-            self.set_up()
-            self.show()
-
-        def set_up(self):
-            self.main_box_layout = QVBoxLayout()
-            self.setLayout(self.main_box_layout)
-            self.Q_grafica = Q_Base_Figure() 
-            self.main_box_layout.addWidget(self.Q_grafica.Qt_fig)
-
-            data_A = P_ref
-            data_B = P_eval
-
-            # New values ​​of B are computed at positions given by A, using interpolation.
-            data_B_from_A_positions = np.interp(data_A[:,0], data_B[:,0], data_B[:,1], left = np.nan)
-        
-            difference = data_A[:,1] - data_B_from_A_positions
-
-            added_positions = np.array((data_A[:,0], difference))
-            values = np.transpose(added_positions)
-        
-            g, g_percent = gamma_1D(data_A, data_B)
-
-            self.Q_grafica.plot_data(P_ref)
-            self.Q_grafica.plot_data(P_eval)
-            self.Q_grafica.plot_resta(values)
-            self.Q_grafica.plot_gamma(g)
-
-    def plot_data(Profile):
-        window.Q_grafica.plot_data(Profile)
+    A = build_from_array_and_step(a, 1)
+    B = build_from_array_and_step(b, 1)
     
-    #def plot_gamma
-    
-    def show():
-        sys.exit(app.exec())
-
-    app = QApplication(sys.argv)
-    window = Window()
-    plot_data(P_ref)
-    plot_data(P_eval)
+    plot(A,B)
 
 if __name__ == '__main__':
-    """
-        from tools import build_from_array_and_step
+    
+    from tools import build_from_array_and_step
 
-        a = np.array([2,4,6,8,10])
-        b = a + np.random.random_sample((5,))
-        A = build_from_array_and_step(a, 0.5)
-        B = build_from_array_and_step(b, 0.5)
+    a = np.array([1,2,3,4,5])
+    b = a + np.random.random_sample((5,))
+    A = build_from_array_and_step(a, 0.5)
+    B = build_from_array_and_step(b, 0.5)
 
-        plot_profiles_and_comparison(A,B)
-    """
+    #plot_profiles_and_comparison(A,B)
+    
     app = QApplication(sys.argv)
-    window = Main_Window()
+    window = GUI(A, B)
     sys.exit(app.exec())

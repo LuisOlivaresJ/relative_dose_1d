@@ -32,9 +32,9 @@ After two successful loaded data, normaliztion, gamma index comparison and dose 
 import sys
 from PyQt6.QtWidgets import QApplication
 
-from relative_dose_1d.main_GUI import Main_Window
+from relative_dose_1d.GUI_tool import GUI
       
 app = QApplication(sys.argv)
-window = Main_Window()
+window = GUI()
 sys.exit(app.exec())
 

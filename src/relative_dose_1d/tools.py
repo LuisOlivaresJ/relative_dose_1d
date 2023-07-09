@@ -4,7 +4,7 @@ Created on Mon Apr 24 2023
 
 @author: Luis Alfonso Olivares Jimenez
 
-Functions to read 1-dimensional dose profiles and perform gamma index comparison.
+Tools to read 1-dimensional dose profiles and perform gamma index comparison.
 
 The data should be in M ​​rows by 2 columns, corresponding to positions and
 dose values, respectively.
@@ -296,9 +296,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_threshold = 0, interpol = 1
 
     #   A variable to store gamma calculations.
     gamma = np.zeros( (ref.shape[0], 2) )
-    print(num_of_points)
-    print(ref.shape[0])
-    print(interp_positions.shape[0])
+
     gamma[:,0] = ref[:,0]   #Add the same positions.
 
     for i in range(ref.shape[0]):
