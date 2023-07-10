@@ -10,6 +10,7 @@ import numpy as np
 from relative_dose_1d.tools import identify_format, get_data, gamma_1D, build_from_array_and_step
 import sys
 import os
+import copy
 
 class GUI(QWidget):
 
@@ -174,7 +175,7 @@ class GUI(QWidget):
             scale_factor = float(scale_factor)
             if ok:
                 self.loaded_data[-1][:,0] = self.loaded_data[-1][:,0] * scale_factor
-                cache_data = self.loaded_data
+                cache_data = copy.deepcopy(self.loaded_data)
                 self.clear_data_and_plots()
 
                 for data in cache_data:
@@ -190,7 +191,7 @@ class GUI(QWidget):
             delta = float(delta)
             if ok:
                 self.loaded_data[-1][:,0] = self.loaded_data[-1][:,0] + delta
-                cache_data = self.loaded_data
+                cache_data = copy.deepcopy(self.loaded_data)
                 self.clear_data_and_plots()
 
                 for data in cache_data:
