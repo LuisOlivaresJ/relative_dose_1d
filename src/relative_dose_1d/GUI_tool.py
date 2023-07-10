@@ -129,13 +129,13 @@ class GUI(QWidget):
         self.v_box_layout.addWidget(self.Q_grafica.Qt_fig)
         
     def set_up_data(self):
-        if self.D_ref.any():
+        if self.D_ref is None:
+            self.loaded_data = []
+        else:          
             self.loaded_data = [self.D_ref, self.D_eval]
             self.Q_grafica.plot_data(self.D_ref)
             self.Q_grafica.plot_data(self.D_eval)
             self.calc_difference_and_gamma()
-        else:
-            self.loaded_data = []
 
     # Button's functions
 
@@ -244,7 +244,9 @@ class GUI(QWidget):
 
         self.Q_grafica.plot_resta(values)
         self.Q_grafica.ax_gamma.clear()
+        #self.Q_grafica.ax_gamma = self.Q_grafica.ax_perfil_resta.twinx()
         self.Q_grafica.plot_gamma(g)
+        #self.Q_grafica.ax_gamma.set_ylabel('gamma')
         self.gamma_rate_label.setText(f"Pass rate: {g_percent:0.1f}%")
         self.total_points_label.setText(f"Total points: {data_A.shape[0]:0.1f}")
         self.evaluated_points_label.setText(f"Evaluated ponits: {evaluated_points:0.1f}")
@@ -298,7 +300,9 @@ class Q_Base_Figure:
         y = data[:,1]
 
         self.ax_gamma.plot(x, y, color='g', label = 'gamma', marker = '.')
+        self.ax_gamma.plot(np.ones(x.shape[0]), 'g--', alpha = 0.5, linewidth=2)
         self.ax_gamma.set_ylabel('gamma')
+        self.ax_gamma.yaxis.set_label_position("right")
         self.ax_gamma.legend(loc = 'upper right')
 
         self.fig.canvas.draw()
@@ -354,14 +358,10 @@ def run_demo():
 
 if __name__ == '__main__':
     
-    from tools import build_from_array_and_step
-
     a = np.array([0,1,2,3,4,5,6,7,8,9,10])
     b = a + np.random.random_sample((11,))
     A = build_from_array_and_step(a, 1)
     B = build_from_array_and_step(b, 1)
-
-    #plot_profiles_and_comparison(A,B)
     
     app = QApplication(sys.argv)
     window = GUI(A, B)
