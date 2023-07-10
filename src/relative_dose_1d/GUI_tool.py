@@ -300,7 +300,7 @@ class Q_Base_Figure:
         y = data[:,1]
 
         self.ax_gamma.plot(x, y, color='g', label = 'gamma', marker = '.')
-        self.ax_gamma.plot(np.ones(x.shape[0]), 'g--', alpha = 0.5, linewidth=2)
+        self.ax_gamma.plot(x, np.ones(x.shape[0]), 'g--', alpha = 0.5, linewidth=2)
         self.ax_gamma.set_ylabel('gamma')
         self.ax_gamma.yaxis.set_label_position("right")
         self.ax_gamma.legend(loc = 'upper right')
