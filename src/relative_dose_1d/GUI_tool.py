@@ -80,7 +80,9 @@ class GUI(QWidget):
         self.button_origin.setFixedSize(80, 40)
         self.button_origin.setEnabled(False)
 
-        self.settings_layout_v.addWidget(QLabel("Axis position", alignment = Qt.AlignmentFlag.AlignHCenter))
+        axis_label = QLabel("Axis position")
+        #axis_label.setFont(QFont(Arial, 15))
+        self.settings_layout_v.addWidget(axis_label, alignment = Qt.AlignmentFlag.AlignHCenter)
         self.settings_layout_v.addWidget(self.button_factor)
         self.settings_layout_v.addWidget(self.button_origin)
         self.settings_layout_v.addWidget(QLabel("Gamma", alignment = Qt.AlignmentFlag.AlignHCenter))
@@ -103,7 +105,22 @@ class GUI(QWidget):
         gammaLayout.addRow("Threshold [%]:", self.thres_QLine)
         gammaLayout.addRow("Interp.:", self.interp_QLine)
 
+        self.gamma_button = QPushButton("Apply")
+        self.gamma_button.clicked.connect(self.calc_difference_and_gamma)
+        self.gamma_button.setFixedSize(120, 40)
+        #self.button_origin.setEnabled(False)
+
+        results_label = QLabel("Results", alignment = Qt.AlignmentFlag.AlignHCenter)
+        self.gamma_rate_label = QLabel("Pass rate: ")
+        self.total_points_label = QLabel("Total points: ")
+        self.evaluated_points_label = QLabel("Evaluated ponits: ")
+
         self.settings_layout_v.addLayout(gammaLayout)
+        self.settings_layout_v.addWidget(self.gamma_button)
+        self.settings_layout_v.addWidget(results_label)
+        self.settings_layout_v.addWidget(self.gamma_rate_label)
+        self.settings_layout_v.addWidget(self.total_points_label)
+        self.settings_layout_v.addWidget(self.evaluated_points_label)
 
         self.settings_layout_v.addStretch()
          
@@ -114,8 +131,8 @@ class GUI(QWidget):
     def set_up_data(self):
         if self.D_ref.any():
             self.loaded_data = [self.D_ref, self.D_eval]
-            self.Q_grafica.plot_data(self.D_ref, "reference")
-            self.Q_grafica.plot_data(self.D_eval, "evaluated")
+            self.Q_grafica.plot_data(self.D_ref)
+            self.Q_grafica.plot_data(self.D_eval)
             self.calc_difference_and_gamma()
         else:
             self.loaded_data = []
@@ -146,6 +163,10 @@ class GUI(QWidget):
         self.Q_grafica.fig.canvas.draw()
         self.open_file_button.setEnabled(True)
         self.loaded_data = []
+
+    def clear_gamma(self):
+        self.Q_grafica.ax_perfil_resta.clear()
+        self.Q_grafica.ax_gamma.clear()
 
     def factor_button_clicked(self):
         scale_factor, ok = QInputDialog.getText(self, 'Scale factor', 'Scale factor:')
@@ -212,7 +233,7 @@ class GUI(QWidget):
         added_positions = np.array((data_A[:,0], difference))
         values = np.transpose(added_positions)
        
-        g, g_percent = gamma_1D(
+        g, g_percent, evaluated_points = gamma_1D(
             data_A, 
             data_B,
             dose_t = float(self.dose_t_QLine.text()),
@@ -222,7 +243,12 @@ class GUI(QWidget):
             )
 
         self.Q_grafica.plot_resta(values)
+        self.Q_grafica.ax_gamma.clear()
         self.Q_grafica.plot_gamma(g)
+        self.gamma_rate_label.setText(f"Pass rate: {g_percent:0.1f}%")
+        self.total_points_label.setText(f"Total points: {data_A.shape[0]:0.1f}")
+        self.evaluated_points_label.setText(f"Evaluated ponits: {evaluated_points:0.1f}")
+
         print(g_percent)
 
 class Q_Base_Figure:
@@ -246,14 +272,14 @@ class Q_Base_Figure:
         self.ax_gamma.set_ylabel('gamma')
         #self.ax_gamma.set_ylim((0, 2))
         
-    def plot_data(self, data, label = None):
+    def plot_data(self, data):
         x = data[:,0]
         y = data[:,1]
-        self.ax_perfil.plot(x, y, label = label)
+        self.ax_perfil.plot(x, y)
         self.ax_perfil.set_ylabel('Percentage [%]')
         self.ax_perfil.set_xlabel('Distance [mm]')
         self.ax_perfil.grid(alpha = 0.3)
-        self.ax_perfil.legend()
+        #self.ax_perfil.legend()
         self.fig.canvas.draw()
         
     def plot_resta(self, data):
@@ -302,8 +328,8 @@ def plot(D_red, D_eval):
 
     >>> import relative_dose_1d.GUI_tool as rd
 
-    >>> a = np.array([1,2,3,4,5])
-    >>> b = a + np.random.random_sample((5,))
+    >>> a = np.array([0,1,2,3,4,5,6,7,8,9,10])
+    >>> b = a + np.random.random_sample((11,))
 
     >>> A = build_from_array_and_step(a, 1)
     >>> B = build_from_array_and_step(b, 1)
@@ -318,8 +344,8 @@ def plot(D_red, D_eval):
 
 def run_demo():
 
-    a = np.array([1,2,3,4,5])
-    b = a + np.random.random_sample((5,))
+    a = np.array([0,1,2,3,4,5,6,7,8,9,10])
+    b = a + np.random.random_sample((11,))
 
     A = build_from_array_and_step(a, 1)
     B = build_from_array_and_step(b, 1)
@@ -330,10 +356,10 @@ if __name__ == '__main__':
     
     from tools import build_from_array_and_step
 
-    a = np.array([1,2,3,4,5])
-    b = a + np.random.random_sample((5,))
-    A = build_from_array_and_step(a, 0.5)
-    B = build_from_array_and_step(b, 0.5)
+    a = np.array([0,1,2,3,4,5,6,7,8,9,10])
+    b = a + np.random.random_sample((11,))
+    A = build_from_array_and_step(a, 1)
+    B = build_from_array_and_step(b, 1)
 
     #plot_profiles_and_comparison(A,B)
     

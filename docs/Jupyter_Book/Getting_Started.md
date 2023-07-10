@@ -7,7 +7,7 @@ from relative_dose_1d import GUI_tool
 GUI_tool.run_demo()
 ```
 
-To plot data in form of a numpy array, use [build_from_array_and_step()](Tools_module_label) function:
+To plot data in form of numpy array, use [build_from_array_and_step()](Tools_module_label) function:
 
 ```python
 import relative_dose_1d.GUI_tool as rd

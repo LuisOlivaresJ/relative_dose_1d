@@ -280,7 +280,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_threshold = 0, interpol = 1
     -------
 
     ndarray, float
-        gamma distribution and gamma percent
+        gamma distribution, gamma percent and number of evaluated points
         
     '''
 
@@ -327,11 +327,11 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_threshold = 0, interpol = 1
     # Number of points where gamma <= 1.
     less_than_1 = np.shape(less_than_1_coordinate)[1]
     # Number evaluated points (!= nan)
-    total_points = np.shape(gamma)[0] - np.shape(np.where(np.isnan(gamma[:,1])))[1]
+    evaluated_points = np.shape(gamma)[0] - np.shape(np.where(np.isnan(gamma[:,1])))[1]
     
-    gamma_percent = float(less_than_1)/total_points*100
+    gamma_percent = float(less_than_1)/evaluated_points*100
 
-    return gamma, gamma_percent
+    return gamma, gamma_percent, evaluated_points
 
 
 if __name__ == '__main__':
