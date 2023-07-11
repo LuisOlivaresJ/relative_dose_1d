@@ -252,8 +252,6 @@ class GUI(QWidget):
         self.total_points_label.setText(f"Total points: {data_A.shape[0]:0.1f}")
         self.evaluated_points_label.setText(f"Evaluated ponits: {evaluated_points:0.1f}")
 
-        print(g_percent)
-
 class Q_Base_Figure:
         
     def __init__(self):
@@ -308,7 +306,7 @@ class Q_Base_Figure:
 
         self.fig.canvas.draw()
 
-def plot(D_red, D_eval):
+def plot(D_ref, D_eval):
     """
     A function to show a graphical user interface (GUI) to showing 1D dose profiles, 
     gamma analysis and dose difference. Data has to be in 2 columns, 
@@ -344,7 +342,7 @@ def plot(D_red, D_eval):
     """
 
     app = QApplication(sys.argv)    
-    window = GUI(A, B)
+    window = GUI(D_ref, D_eval)
     sys.exit(app.exec())
 
 def run_demo():

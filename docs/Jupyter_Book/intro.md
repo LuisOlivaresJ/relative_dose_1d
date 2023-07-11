@@ -10,7 +10,7 @@ Python package to read 1-dimensional dose profile from a text file to perform su
 * Interpolation between points
 * Profile positions does not require to be equal
 ```{note}
-* The gamma analysis algorithm is limited to absolute normalization. 
+* The gamma analysis algorithm is limited to absolute normalization relative to the maximum dose. 
 ```
 
 ### For data import

@@ -1,4 +1,5 @@
 docs/Jupyter_Book/_build
 dist
+src/relative_dose_1d/forTest.py
 src/relative_dose_1d.egg-info
 src/relative_dose_1d/__pycahce__
