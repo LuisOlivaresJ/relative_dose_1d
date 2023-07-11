@@ -1,5 +1,14 @@
 # API
 
+(GUI_tool_module_label)=
+## GUI_tool module
+
+```{eval-rst}
+.. autofunction:: relative_dose_1d.GUI_tool.plot
+```
+(Tools_module_label)=
+## Tools module
+
 ```{eval-rst}
 .. autofunction:: relative_dose_1d.tools.text_to_list
 ```

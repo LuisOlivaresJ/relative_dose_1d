@@ -4,7 +4,7 @@ Created on Mon Apr 24 2023
 
 @author: Luis Alfonso Olivares Jimenez
 
-Functions to read 1-dimensional dose profiles and perform gamma index comparison.
+Tools to read 1-dimensional dose profiles and perform gamma index comparison.
 
 The data should be in M ​​rows by 2 columns, corresponding to positions and
 dose values, respectively.
@@ -195,7 +195,7 @@ def get_data(file_name,
 
 def build_from_array_and_step(array, step):
     """Create a new array with the same length but with an additional axis. The first column represents the 
-    physical positions of the given values. The second column is a copy of the given array. 
+    physical positions of the given values. The second column is a normalization of the given array. 
     The positions are builded with evenly step spacing starting from zero.
 
     Parameters
@@ -211,7 +211,7 @@ def build_from_array_and_step(array, step):
     -------
 
     array, ndarray
-        A new array with shape (M,2), where M is the shape of array.
+        A new array with shape (M,2), where M is the shape of the array.
 
     Examples
     --------
@@ -243,12 +243,12 @@ def build_from_array_and_step(array, step):
     positions = np.linspace(start, stop, num = num, endpoint = True)
     profile = np.zeros((num, 2))
     profile[:,0] = positions
-    profile[:,1] = array
+    profile[:,1] = array / np.max(array) * 100
 
     return profile
     
 
-def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
+def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_threshold = 0, interpol = 1):
     '''
     1-dimensional gamma index calculation.
     Dose profiles have to be normalized (0-100%).
@@ -280,11 +280,11 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     -------
 
     ndarray, float
-        gamma distribution and gamma percent
+        gamma distribution, gamma percent and number of evaluated points
         
     '''
 
-    # min_position and max_position to analize.
+    # min_position and max_position to analyze.
     min_position = np.max( (np.min(ref[:,0]), np.min([eval[:,0]])) )
     max_position = np.min( (np.max(ref[:,0]), np.max([eval[:,0]])) ) 
 
@@ -294,11 +294,12 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     add_positions = np.array((interp_positions, eval_from_interp_positions))
     eval_from_interp_positions = np.transpose(add_positions)
 
-    #   A variable to storage gamma calculations.
-    gamma = np.zeros( (num_of_points, 2) )
+    #   A variable to store gamma calculations.
+    gamma = np.zeros( (ref.shape[0], 2) )
+
     gamma[:,0] = ref[:,0]   #Add the same positions.
 
-    for i in range(num_of_points):
+    for i in range(ref.shape[0]):
 
         if (ref[i,0] < min_position) or (ref[i,0] > max_position):  
 
@@ -318,7 +319,7 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
             Gamma_appended = np.append(Gamma_appended, Gamma)
 
         gamma[i,1] = np.min( Gamma_appended[ ~np.isnan(Gamma_appended) ] )
-        if ref[i,1] < dose_tresh:
+        if ref[i,1] < dose_threshold:
             gamma[i,1] = np.nan
 
     # Coordinates for gamma values <= 1.
@@ -326,15 +327,15 @@ def gamma_1D(ref, eval, dose_t = 3, dist_t = 2, dose_tresh = 0, interpol = 1):
     # Number of points where gamma <= 1.
     less_than_1 = np.shape(less_than_1_coordinate)[1]
     # Number evaluated points (!= nan)
-    total_points = np.shape(gamma)[0] - np.shape(np.where(np.isnan(gamma[:,1])))[1]
+    evaluated_points = np.shape(gamma)[0] - np.shape(np.where(np.isnan(gamma[:,1])))[1]
     
-    gamma_percent = float(less_than_1)/total_points*100
+    gamma_percent = float(less_than_1)/evaluated_points*100
 
-    return gamma, gamma_percent
+    return gamma, gamma_percent, evaluated_points
 
 
 if __name__ == '__main__':
-
+    """
     y = np.array([2,4,6,8,10])
     A = build_from_array_and_step(y, 0.5)
     print(A)
@@ -343,14 +344,15 @@ if __name__ == '__main__':
     B = build_from_array_and_step(y, 3)
     print(B)
 
-    """Test files"""
-    #file_name = './test_data/test_ptw.mcc'
+    """
+    #Test files
+    file_name = './test_data/test_ptw.mcc'
     #file_name = './test_data/test_varian.data'
     #file_name = './test_data/test_txt.txt'
 
-    #file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
+    file_name_eval = "./test_data/X06 OPEN 10X10 PDD WAT 221214 13'13'42.mcc"
     
-    #data_ref = get_data(file_name, start_word =  'Field 1')
-    #data_eval = get_data(file_name_eval)
-    #g, gp = gamma_1D(data_ref, data_eval)
-    #print(gp)
+    data_ref = get_data(file_name, start_word =  'Field 1')
+    data_eval = get_data(file_name_eval)
+    g, gp = gamma_1D(data_ref, data_eval)
+    print(gp)

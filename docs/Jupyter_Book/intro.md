@@ -1,8 +1,20 @@
 # relative_dose_1d
 
-Python package to read 1-dimensional dose profile from a text file and perform subtraction and gamma index comparison.
+Python package to read 1-dimensional dose profile from a text file to perform subtraction and gamma analysis.
 
-![image_gui](../assets/GUI_v011.PNG)
+![image_gui](../assets/GUI_v015.PNG)
+
+## Features
+
+### For gamma analysis
+* Interpolation between points
+* Profile positions does not require to be equal
+```{note}
+* The gamma analysis algorithm is limited to absolute normalization relative to the maximum dose. 
+```
+
+### For data import
+* PTW (R) and Varian (R) data formats suported.
 
 ## Format specifications
 Data should be in M ​​rows by 2 columns, corresponding to positions and
