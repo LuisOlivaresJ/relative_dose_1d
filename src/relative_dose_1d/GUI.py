@@ -36,5 +36,6 @@ from relative_dose_1d.GUI_tool import GUI
       
 app = QApplication(sys.argv)
 window = GUI()
+window.show()
 sys.exit(app.exec())
 
