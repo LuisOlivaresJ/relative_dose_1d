@@ -4,17 +4,17 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import FigureCanvas
 from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QHBoxLayout,
                              QPushButton, QMessageBox, QFileDialog, QVBoxLayout,
-                             QFormLayout, QInputDialog, QMainWindow)
-from PyQt6.QtCore import Qt
+                             QFormLayout, QInputDialog, QMainWindow, QDialog)
+from PyQt6.QtCore import Qt, QCoreApplication
 import numpy as np
 from relative_dose_1d.tools import identify_format, get_data, gamma_1D, build_from_array_and_step
 import sys
 import os
 import copy
 
-class GUI(QWidget):
+class GUI(QDialog):
 
-    def __init__(self, D_ref = None, D_eval = None):
+    def __init__(self, D_ref = None, D_eval = None, parent=None):
         """Constructor for a graphical user interface (GUI). Data has to be in 2 columns, 
         corresponding to positions and dose values, respectively.
 
@@ -33,7 +33,7 @@ class GUI(QWidget):
         A PyQt widget to showing dose profiles, gamma analysis and dose difference.
 
         """
-        super().__init__()
+        super().__init__(parent=parent)
 
         self.D_ref = D_ref
         self.D_eval = D_eval
@@ -48,7 +48,6 @@ class GUI(QWidget):
 
         self.set_up_window()
         self.set_up_data()
-        self.show()
 
     def set_up_window(self):
 
@@ -329,7 +328,9 @@ def plot(D_ref, D_eval):
     Examples
     --------
 
-    >>> import relative_dose_1d.GUI_tool as rd
+    >>> from relative_dose_1d.GUI_tool import plot
+    >>> from relative_dose_1d.tools import build_from_array_and_step
+    >>> import numpy as np
 
     >>> a = np.array([0,1,2,3,4,5,6,7,8,9,10])
     >>> b = a + np.random.random_sample((11,))
@@ -337,14 +338,19 @@ def plot(D_ref, D_eval):
     >>> A = build_from_array_and_step(a, 1)
     >>> B = build_from_array_and_step(b, 1)
     
-    >>> rd.plot(A,B)
+    >>> w = plot(A,B)
 
     """
-
-    app = QApplication(sys.argv)    
-    window = GUI(D_ref, D_eval)
-    sys.exit(app.exec())
-
+    
+    if not QCoreApplication.instance():
+        app = QApplication(sys.argv)
+        window = GUI(D_ref, D_eval)
+        window.show()
+        sys.exit(app.exec())
+    else:
+        """This condition is used when external applications call to plot function."""
+        return GUI(D_ref, D_eval)
+    
 def run_demo():
 
     a = np.array([0,1,2,3,4,5,6,7,8,9,10])

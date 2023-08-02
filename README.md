@@ -90,3 +90,6 @@ Jul-2023 Version 0.1.4 - 0.1.6
 * Now it is possible to change tolerance parameter for gamma evaluation.
 * Pass rate, total and evaluated points are now displayed on the GUI.
 * gamma_1d function returns the number of evaluated points.
+
+Aug-2023 Version 0.1.7
+* The plot function can be called outside relative_dose_1d application.
